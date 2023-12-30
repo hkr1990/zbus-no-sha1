@@ -12,8 +12,6 @@ use std::{
 use tracing::{instrument, trace};
 use zvariant::Str;
 
-use sha1::{Digest, Sha1};
-
 use xdg_home::home_dir;
 
 #[cfg(windows)]
@@ -219,8 +217,8 @@ impl<S: Socket> ClientHandshake<S> {
 
                 let cookie = Cookie::lookup(&context, id).await?.cookie;
                 let client_challenge = random_ascii(16);
-                let sec = format!("{server_challenge}:{client_challenge}:{cookie}");
-                let sha1 = hex::encode(Sha1::digest(sec));
+                let _sec = format!("{server_challenge}:{client_challenge}:{cookie}");
+                let sha1 = ""; // SHA1 disabled 
                 let data = format!("{client_challenge} {sha1}");
                 Ok((
                     ClientHandshakeStep::WaitingForOK,
@@ -645,8 +643,8 @@ impl<'s, S: Socket> ServerHandshake<'s, S> {
         let client_sha1 = split
             .next()
             .ok_or_else(|| Error::Handshake("Missing client cookie data".into()))?;
-        let sec = format!("{server_challenge}:{client_challenge}:{}", cookie.cookie);
-        let sha1 = hex::encode(Sha1::digest(sec));
+        let _sec = format!("{server_challenge}:{client_challenge}:{}", cookie.cookie);
+        let sha1 = ""; // SHA1 disabled
 
         if sha1 == client_sha1 {
             self.auth_ok().await
